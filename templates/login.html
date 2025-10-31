@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+</head>
+<body>
+    <h2>Введите OTP-токен</h2>
+    <form method="POST" action="/auth">
+        <label for="otp">OTP:</label><br>
+        <input type="text" id="otp" name="otp" maxlength="6" required><br><br>
+        <button type="submit">Войти</button>
+    </form>
+</body>
+</html>
