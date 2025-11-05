@@ -4,6 +4,8 @@ import requests
 import pyotp
 import os
 import modules.legalDetails as legalDetails
+from prometheus_client import Counter, Histogram, generate_latest
+import time
 
 app = Flask(__name__)
 # Получаем секретный ключ из переменной окружения
@@ -53,6 +55,26 @@ def check_inn():
 def logout():
     session.pop('logged_in', None)
     return redirect(url_for('login'))
+
+# Метрики
+REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
+REQUEST_LATENCY = Histogram('http_request_duration_seconds', 'HTTP request latency', ['endpoint'])
+
+@app.route('/metrics')
+def metrics():
+    return generate_latest(), 200, {'Content-Type': 'text/plain'}
+
+# Middleware для сбора метрик
+@app.before_request
+def before_request():
+    request.start_time = time.time()
+
+@app.after_request
+def after_request(response):
+    latency = time.time() - request.start_time
+    REQUEST_LATENCY.labels(request.endpoint).observe(latency)
+    REQUEST_COUNT.labels(request.method, request.endpoint, response.status_code).inc()
+    return response
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
