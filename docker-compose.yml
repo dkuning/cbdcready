@@ -1,17 +1,12 @@
 # docker-compose.yml
-version: '3.8'
-
 services:
   web:
     build: .
-    # Убираем ports — теперь доступ только через nginx
-    # ports: - "5000:5000"
     env_file:
       - .env
     depends_on:
       - bot
     restart: unless-stopped
-    # Внутренний порт доступен только для nginx и других сервисов
     expose:
       - "5000"
 
@@ -26,8 +21,32 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./certbot/www:/var/www/certbot
+      - certbot-data:/etc/letsencrypt
+      - nginx-log:/var/log/nginx
     depends_on:
       - web
     restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot-data:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: >
+      certonly --webroot
+      --webroot-path=/var/www/certbot
+      --email kuning.denis@gmail.com
+      --agree-tos
+      --no-eff-email
+      -d cbdc.kongius.ru
+      -d www.cbdc.kongius.ru
+    depends_on:
+      - nginx
+
+volumes:
+  certbot-data:
+  nginx-log:

@@ -1,5 +1,55 @@
+# === Секреты ===
 .env
-.git
-.idea
+.env.local
+.env.production
+
+# === Виртуальные окружения ===
 .venv
-__pycache__
+venv/
+env/
+ENV/
+
+# === Логи и временные файлы ===
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+
+# === Системные и IDE-файлы ===
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# === Git и сборка ===
+.git/
+*.log
+dist/
+build/
+*.egg-info/
+
+# === Nginx и HTTPS (важно!) ===
+# Сертификаты Let's Encrypt (НИКОГДА не коммитить!)
+certbot-data/
+/etc/letsencrypt/
+
+# Временная папка для проверки домена (если локально)
+certbot/www/*
+!.gitkeep
+
+# Логи Nginx (если монтируются)
+nginx-log/
+/var/log/nginx/
+
+# Статические и шаблоны (если генерируются)
+static/css/bundle.*
+static/js/bundle.*
+
+# === Docker ===
+docker-compose.override.yml
+*.tar
