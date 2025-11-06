@@ -1,59 +1,82 @@
-<main>
-    <p>Это пример простой HTML-страницы.</p>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Данные организации по ИНН</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <header>
+        <h1>Сервис получения данных организации по ИНН</h1>
+    </header>
 
-    <!-- Форма для ввода ИНН -->
-    <form id="innForm">
-        <label for="inn">ИНН клиента:</label><br>
-        <input type="text" id="inn" name="inn" maxlength="10" placeholder="Введите ИНН"><br><br> <!-- Изменено: maxlength="10" -->
-        <button type="submit">Проверить</button>
-    </form>
+    <main>
+        <p>Введите ИНН для получения краткой информации.</p>
 
-    <!-- Поле вывода кратких данных -->
-    <div id="shortResult" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; background-color: #eef; font-family: monospace;">
-        Здесь будут краткие данные:
-    </div>
+        <!-- Форма для ввода ИНН -->
+        <form id="innForm">
+            <label for="inn">ИНН клиента:</label>
+            <input type="text" id="inn" name="inn" maxlength="10" placeholder="10 цифр" required />
+            <button type="submit">Получить</button>
+        </form>
 
-    <!-- Подключение JavaScript -->
+        <!-- Поле вывода кратких данных -->
+        <div id="shortResult" class="result-box">
+            Здесь будут краткие данные
+        </div>
+
+        <!-- Кнопка выхода -->
+        <form method="POST" action="/logout" class="logout-form">
+            <button type="submit">Выйти</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>Цифра неизбежно победит &copy; <span id="year"></span></p>
+    </footer>
+
     <script>
+        // Установка года в футер
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Обработка формы ИНН
         document.getElementById('innForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            const inn = document.getElementById('inn').value;
+            const inn = document.getElementById('inn').value.trim();
 
-            if (!inn || inn.length !== 10) {
-                document.getElementById('result').innerText = 'ИНН должен содержать 10 символов';
-                document.getElementById('shortResult').innerText = '';
+            if (!inn || inn.length !== 10 || !/^\d{10}$/.test(inn)) {
+                document.getElementById('shortResult').textContent = 'ИНН должен содержать 10 цифр';
                 return;
             }
 
             fetch(`/check_inn?inn=${inn}`)
                 .then(response => response.json())
                 .then(json => {
+                    const resultBox = document.getElementById('shortResult');
                     if (json.error) {
-                        document.getElementById('shortResult').innerText = '';
-                    } else {
+                        resultBox.textContent = 'Ошибка: ' + json.error;
+                    } else if (json.short) {
                         let shortText = '';
-                        for (const key in json.short) {
-                            shortText += `${key}: ${json.short[key]}\n`;
+                        for (const [key, value] of Object.entries(json.short)) {
+                            shortText += `${key}: ${value}\n`;
                         }
-                        document.getElementById('shortResult').innerText = shortText.trim();
+                        resultBox.textContent = shortText.trim();
+                    } else {
+                        resultBox.textContent = 'Нет данных';
                     }
                 })
-                .catch(error => {
-                    document.getElementById('shortResult').innerText = '';
+                .catch(() => {
+                    document.getElementById('shortResult').textContent = 'Ошибка соединения';
                 });
         });
-    </script>
 
-    <!-- Добавьте это в конец index.html -->
-    <form method="POST" action="/logout">
-        <button type="submit">Выйти</button>
-    </form>
-
-    <script>
-    document.querySelector("form[action='/logout']").addEventListener('submit', function(e) {
-        e.preventDefault();
-        fetch('/logout', { method: 'POST' })
-            .then(() => window.location.href = '/login');
-    });
+        // Обработка выхода
+        document.querySelector("form[action='/logout']").addEventListener('submit', function (e) {
+            e.preventDefault();
+            fetch('/logout', { method: 'POST' })
+                .then(() => (window.location.href = '/login'));
+        });
     </script>
-</main>
+</body>
+</html>

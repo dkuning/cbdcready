@@ -7,7 +7,8 @@ import modules.legalDetails as legalDetails
 from prometheus_client import Counter, Histogram, generate_latest
 import time
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
+
 # Получаем секретный ключ из переменной окружения
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'JROFFXC5EVY6N2DY')
 
@@ -39,7 +40,8 @@ def auth():
         session['logged_in'] = True
         return redirect(url_for('index'))
     else:
-        return "Неверный OTP", 401
+        # Перенаправляем обратно на login с параметром ошибки
+        return redirect(url_for('login', error='invalid'))
 
 def is_logged_in():
     return session.get('logged_in', False)

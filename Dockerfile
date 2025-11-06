@@ -9,6 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем только нужные файлы и папки
 COPY nginx/ ./nginx/
+COPY static/ ./static/
 COPY templates/ ./templates/
 COPY modules/ ./modules/
 COPY app.py .
