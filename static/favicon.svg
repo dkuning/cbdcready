@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <!-- Фон — кораллово-красный -->
+  <rect width="64" height="64" fill="#FF7F50" rx="16" /> <!-- Coral color: #FF7F50 -->
+  <!-- Символ рубля белого цвета -->
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
+        font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="white">
+    ₽
+  </text>
+</svg>
