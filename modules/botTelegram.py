@@ -78,7 +78,8 @@ def format_legal_info(data):
         f"🔢 ОКПО: {short.get('ОКПО', '-')}",
         f"🔢 ОКАТО: {short.get('ОКАТО', '-')}",
         f"🔢 ОКФС: {short.get('ОКФС', '-')}",
-        f"🔢 ОКОГУ: {short.get('ОКОГУ', '-')}"
+        f"🔢 ОКОГУ: {short.get('ОКОГУ', '-')}",
+        f"🔢 ЕИО: {short.get('ЕИО', '-')}"
     ]
 
     return "\n".join(lines)

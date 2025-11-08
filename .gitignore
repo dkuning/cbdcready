@@ -53,3 +53,6 @@ static/js/bundle.*
 # === Docker ===
 docker-compose.override.yml
 *.tar
+
+# === Вспомогательные локальные файлы проекта ===
+drafts/
