@@ -19,6 +19,3 @@ RUN chmod +x /app/modules/botTelegram.py
 
 # Указываем, что приложение слушает 5000 порт (для Flask)
 EXPOSE 5000
-
-# Запуск будет определён в docker-compose
-CMD ["python", "app.py"]
