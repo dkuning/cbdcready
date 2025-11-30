@@ -5,13 +5,9 @@ services:
     env_file:
       - .env
     command: python app.py
-    depends_on:
-      - bot
     restart: unless-stopped
     expose:
       - "5000"
-    labels:
-      - "com.github.jrcs.nginx_exporter.prometheus=true"
     volumes:
       - ./logs/web:/app/logs
     logging:
@@ -35,93 +31,6 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
-    networks:
-      - proxy-network
-
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus-data:/prometheus
-      - ./logs/prometheus:/logs
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.enable-lifecycle'
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "5"
-    networks:
-      - proxy-network
-
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana-storage:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./logs/grafana:/var/log/grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=securepassword123
-      - GF_SERVER_ROOT_URL=https://monitor.cbdc.kongius.ru
-      - GF_AUTH_BASIC_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ENABLED=false
-    restart: unless-stopped
-    depends_on:
-      - prometheus
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "5"
-    networks:
-      - proxy-network
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.47.0
-    ports:
-      - "8080:8080"
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - ./logs/cadvisor:/logs
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - proxy-network
-
-  node-exporter:
-    image: prom/node-exporter:latest
-    ports:
-      - "9100:9100"
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-      - ./logs/node-exporter:/logs
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
     networks:
       - proxy-network
 
